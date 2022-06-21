@@ -59,6 +59,7 @@ def _build_diagonal_hatch(delta: float, offset: float, w: int, h: int, angle: fl
     angle_rad = angle * math.pi / 180
 
     lines = []
+    print(f"{angle=}")
     # Draw vertical lines
     if angle == 90:
         for i in np.arange(offset, w + 1, delta):
@@ -86,8 +87,11 @@ def _build_diagonal_hatch(delta: float, offset: float, w: int, h: int, angle: fl
                 stop = (0, j)
             else:
                 stop = ((j - h) * i / j, h)
-
+            #print(f"{start=},{stop=}")
+            x1,y1 = start
+            x2,y2 = stop
             lines.append([start, stop])
+            lines.append([(x1,y2), (x2,y1)])
 
     else:
         for i in np.arange(h / math.tan(angle_rad) + offset, w + 1, delta):
@@ -104,6 +108,7 @@ def _build_diagonal_hatch(delta: float, offset: float, w: int, h: int, angle: fl
                 stop = (w, j)
 
             lines.append([start, stop])
+           
     return lines
 
 
@@ -193,12 +198,13 @@ def _build_hatch(
 
     if not isinstance(levels, Tuple):
         levels = (levels,)
-
+    print(f"{levels=}")
     if invert:
         levels = tuple(255 - i for i in reversed(levels))
 
     h, w = img.shape
     n_levels = len(levels)
+    print(f"{n_levels=}")
 
     # border for contours to be closed shapes
     r = np.zeros(shape=(img.shape[0] + 2, img.shape[1] + 2))
@@ -214,7 +220,9 @@ def _build_hatch(
 
         # Spacing considers interleaved lines from different levels
         delta_factors = [2 ** (n_levels - 1)]
+        print(delta_factors)
         delta_factors.extend([2 ** (n_levels - i) for i in range(1, n_levels)])
+        print(delta_factors)
         offset_factors = [0]
         offset_factors.extend([2 ** (n_levels - i - 1) for i in range(1, n_levels)])
 
